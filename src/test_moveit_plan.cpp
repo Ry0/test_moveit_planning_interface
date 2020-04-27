@@ -1,4 +1,4 @@
-#include <moveit/move_group_interface/move_group.h>
+#include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 
 #include <moveit_msgs/DisplayRobotState.h>
@@ -9,15 +9,15 @@
 
 #include <ros_colored_msg.h>
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
   ros::init(argc, argv, "test_moveit_plan");
   ros::NodeHandle node_handle;
   ros::AsyncSpinner spinner(1);
   spinner.start();
 
-  moveit::planning_interface::MoveGroup group("arm");
-
+  moveit::planning_interface::MoveGroupInterface group("manipulator");
+  group.setPlannerId("PTP");
   moveit::planning_interface::PlanningSceneInterface planning_scene_interface;
 
   ros::Publisher display_publisher =
@@ -55,8 +55,8 @@ int main(int argc, char** argv)
     // Set the random pose.
     group.setRandomTarget();
 
-    moveit::planning_interface::MoveGroup::Plan my_plan;
-    bool success = group.plan(my_plan);
+    moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+    bool success = (group.plan(my_plan) == moveit::planning_interface::MoveItErrorCode::SUCCESS);
 
     ROS_INFO("Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
     ROS_GREEN_STREAM("Finish " << i + 1 << " loop");
